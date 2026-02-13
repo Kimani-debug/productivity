@@ -8,6 +8,7 @@ const breakTxt = document.getElementById("break_text");
 
 let duration = Number(timerDisplay.textContent) * 60;
 let restDuration = Number(restTimer.textContent) * 60;
+let longRest = 15 * 60;
 
 let workRemaining = duration;
 let restRemaining = restDuration;
@@ -16,9 +17,10 @@ let intervalId = null;
 let endTime = null;
 let isRunning = false;
 let restTime = false;
+let startCount = 0;
 
 restTimer.style.display = "none";
-timerDisplay.style.display = "none";
+timerDisplay.style.display = "block";
 workTxt.style.display = "none";
 breakTxt.style.display = "none";
 
@@ -38,10 +40,13 @@ function updateDisplay() {
 
 function startTimer() {
   if (isRunning) return;
+  
+  startCount++;
   restTime = false;
   isRunning = true;
 
   restTimer.style.display = "none";
+  workTxt.style.display = "block";
   timerDisplay.style.display = "block";
 
   endTime = Date.now() + workRemaining * 1000;
@@ -57,6 +62,7 @@ function startTimer() {
       isRunning = false;
 
       timerDisplay.style.display = "none";
+      workTxt.style.display = "none";
       rest_Timer(); // start rest after work completes
     }
   }, 250);
@@ -66,10 +72,20 @@ function rest_Timer() {
   if (isRunning) return;
   restTime = true;
   isRunning = true;
+  
+    if(startCount == 2)
+    {
+    //restTimer.textContent = "15";
+    restDuration = longRest
+    startCount = 0;    
+    } else {
+    restDuration = restDuration;
+    }
 
   timerDisplay.style.display = "none";
   restTimer.style.display = "block";
-
+  breakTxt.style.display = "block";
+  
   // IMPORTANT: base endTime on restRemaining
   endTime = Date.now() + restRemaining * 1000;
 
@@ -89,6 +105,7 @@ function rest_Timer() {
       workRemaining = duration;
 
       restTime = false;
+      breakTxt.style.display = "none";
       startTimer(); // start work again
     }
   }, 250);
