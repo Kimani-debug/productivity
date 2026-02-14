@@ -5,10 +5,12 @@ const pauseBtn = document.getElementById("pause_button");
 const resetBtn = document.getElementById("reset_button");
 const workTxt = document.getElementById("work_text");
 const breakTxt = document.getElementById("break_text");
+const workBlkTxt = document.getElementById("workblk");
+const restBlkTxt = document.getElementById("restblk");
 
 let duration = Number(timerDisplay.textContent) * 60;
 let restDuration = Number(restTimer.textContent) * 60;
-let longRest = 15 * 60;
+let longRest = 3 * 60;
 
 let workRemaining = duration;
 let restRemaining = restDuration;
@@ -21,8 +23,14 @@ let startCount = 0;
 
 restTimer.style.display = "none";
 timerDisplay.style.display = "block";
-workTxt.style.display = "none";
+workTxt.style.display = "block";
 breakTxt.style.display = "none";
+workBlkTxt.style.display = "none";
+restBlkTxt.style.display = "none";
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function formatTime(seconds) {
   const mins = Math.floor(seconds / 60);
@@ -46,12 +54,13 @@ function startTimer() {
   isRunning = true;
 
   restTimer.style.display = "none";
+  restBlkTxt.style.display = "none";
   workTxt.style.display = "block";
   timerDisplay.style.display = "block";
 
   endTime = Date.now() + workRemaining * 1000;
 
-  intervalId = setInterval(() => {
+  intervalId = setInterval(async () => {
     const now = Date.now();
     workRemaining = Math.max(0, Math.round((endTime - now) / 1000));
 
@@ -63,6 +72,8 @@ function startTimer() {
 
       timerDisplay.style.display = "none";
       workTxt.style.display = "none";
+      workBlkTxt.style.display = "block";
+      await sleep(3000);
       rest_Timer(); // start rest after work completes
     }
   }, 250);
@@ -73,15 +84,15 @@ function rest_Timer() {
   restTime = true;
   isRunning = true;
   
-    if(startCount == 2)
+    if(startCount == 3)
     {
-    //restTimer.textContent = "15";
-    restDuration = longRest
+    restRemaining = longRest
     startCount = 0;    
     } else {
-    restDuration = restDuration;
+    restRemaining = restDuration;
     }
 
+  workBlkTxt.style.display = "none";
   timerDisplay.style.display = "none";
   restTimer.style.display = "block";
   breakTxt.style.display = "block";
@@ -89,7 +100,7 @@ function rest_Timer() {
   // IMPORTANT: base endTime on restRemaining
   endTime = Date.now() + restRemaining * 1000;
 
-  intervalId = setInterval(() => {
+  intervalId = setInterval(async () => {
     const now = Date.now();
     restRemaining = Math.max(0, Math.round((endTime - now) / 1000));
 
@@ -98,14 +109,16 @@ function rest_Timer() {
     if (restRemaining <= 0) {
       clearInterval(intervalId);
       isRunning = false;
-      alert("Break session complete!");
+      restTime = false;
 
       // reset rest for next cycle, reset work for next cycle (optional)
       restRemaining = restDuration;
       workRemaining = duration;
 
-      restTime = false;
       breakTxt.style.display = "none";
+      timerDisplay.style.display = "none";
+      restBlkTxt.style.display = "block";
+      await sleep(3000);
       startTimer(); // start work again
     }
   }, 250);
