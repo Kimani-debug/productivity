@@ -1,0 +1,89 @@
+<html lang="en" vid="0"><head vid="1">
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">Pomodoro Calculator</title> 
+</head>
+<body vid="6">
+
+    <div class="app-window" vid="7">
+        
+        
+        <main class="pane-timer" vid="8">
+            <header class="header-nav" vid="9">
+                <span vid="10">KELIUS</span>
+                <div class="header-nav-links" vid="11">
+                    <span vid="12">TIMER</span>
+                    <span vid="13">SETTINGS</span>
+                    <span vid="14">LOGOUT</span>
+                </div>
+            </header>
+
+            <div class="timer-display-container" vid="15">
+                <div class="timer-digits" id="timer_display">25:00</div>
+                
+                <div vid="17">
+                    <div class="current-task-label" vid="18">CURRENTLY FOCUSING ON</div>
+                    <div class="current-task-name" id="current_task_name">No task selected</div>
+                </div>
+
+                <div class="controls" vid="20">
+                    <button class="btn-control active" id="start_button">START</button>
+                    <button class="btn-control" id="pause_button">PAUSE</button>
+                    <button class="btn-control" id="skip_button">SKIP</button>
+                    <button class="btn-control" id="reset_button">RESET</button>
+                </div>
+            </div>
+        </main>
+
+        
+        <aside class="pane-sidebar" vid="25">
+            
+            
+            <section class="section-tasks" vid="26">
+                <header class="section-header" vid="27">
+                    <span vid="28">TASK QUEUE</span>
+                    <button class="btn-control" id="add_task_button">+ ADD</button>
+                </header>
+
+                <div class="task-input-group" vid="30">
+                    <input type="text" class="task-input" id="task_input" placeholder="What needs to be done?" vid="31">
+                </div>
+
+                <ul class="task-list" id="task_list" vid="32"></ul>
+            </section>
+
+            
+            <section class="section-stats" vid="45">
+                <header class="section-header" vid="46">
+                    <span vid="47">SESSION STATS</span>
+                    <span vid="48">TODAY</span>
+                </header>
+
+                <div class="stats-grid" vid="49">
+                    <div class="stat-item" vid="10">
+                        <div class="stat-value" id="pomodoro_count">0</div>
+                        <div class="stat-label">POMODOROS</div>
+                    </div>
+                    <div class="stat-item" vid="11">
+                        <div class="stat-value" id="focus_minutes">0</div>
+                        <div class="stat-label">FOCUS MINS</div>
+                    </div>
+                    <div class="stat-item" vid="12">
+                        <div class="stat-value" id="short_breaks">0</div>
+                        <div class="stat-label">SHORT BREAKS</div>
+                    </div>
+                    <div class="stat-item" vid="13">
+                        <div class="stat-value" id="long_breaks">0</div>
+                        <div class="stat-label">LONG BREAKS</div>
+                    </div>
+                </div>
+            </section>
+
+        </aside>
+
+    </div>
+
+    <script src="new_timer.js"></script>
+
+</body></html>

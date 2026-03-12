@@ -28,6 +28,12 @@ breakTxt.style.display = "none";
 workBlkTxt.style.display = "none";
 restBlkTxt.style.display = "none";
 
+document.querySelectorAll('.task-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('completed');
+            });
+        });
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -117,6 +123,7 @@ function rest_Timer() {
 
       breakTxt.style.display = "none";
       timerDisplay.style.display = "none";
+      restTimer.style.display = "none";
       restBlkTxt.style.display = "block";
       await sleep(3000);
       startTimer(); // start work again
