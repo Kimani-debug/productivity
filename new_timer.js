@@ -1,6 +1,6 @@
 (function () {
   const DURATIONS = {
-    focus: 25 * 60,
+    focus: 1 * 60,
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
   };
@@ -38,7 +38,8 @@
   function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    const workRemaining = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    return workRemaining;
   }
 
   function updateDisplay() {
@@ -172,17 +173,21 @@
     isRunning = false;
   }
 
-  function startTimer() {
+function startTimer() {
     if (isRunning) return;
 
     isRunning = true;
-    timerInterval = setInterval(() => {
-      timeLeft -= 1;
-      updateDisplay();
+   timerInterval = setInterval(() => {
 
-      if (timeLeft <= 0) {
-        completeSession();
-      }
+    if (timeLeft <= 0) {
+      //clearInterval(timerInterval);
+      completeSession();
+      return;
+    }
+
+    timeLeft -= 1;
+    updateDisplay();
+
     }, 1000);
   }
 
@@ -197,8 +202,7 @@
   }
 
   function completeSession(skipped = false) {
-    pauseTimer();
-
+    
     if (currentMode === "focus") {
       if (!skipped) {
         completedPomodoros += 1;
@@ -221,7 +225,6 @@
     } else {
       setMode("focus");
     }
-
     updateStats();
     updateCurrentTaskDisplay();
   }
