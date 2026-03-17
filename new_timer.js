@@ -1,6 +1,6 @@
 (function () {
   const DURATIONS = {
-    focus: 1 * 60,
+    focus: 25 * 60,
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
   };
@@ -31,6 +31,7 @@
   let totalFocusMinutes = 0;
   let shortBreakCount = 0;
   let longBreakCount = 0;
+  let draggedItem = null;
 
   let tasks = [];
   let nextTaskId = 1;
@@ -72,11 +73,53 @@
     const item = document.createElement("div");
     item.className = "task-item";
     item.dataset.taskId = String(task.id);
+    item.draggable = true;
 
     if (task.completed) {
       item.classList.add("completed");
     }
 
+    // --- Drag events ---
+    item.addEventListener("dragstart", (e) => {
+      // Only drag when grabbing the item itself, not checkbox or remove button
+      if (e.target.closest(".task-checkbox") || e.target.closest("button")) {
+        e.preventDefault();
+        return;
+      }
+      draggedItem = item;
+      item.style.opacity = "0.4";
+    });
+    item.addEventListener("dragend", () => {
+      item.style.opacity = "1";
+      draggedItem = null;
+    });
+
+    item.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+
+    item.addEventListener("drop", (e) => {
+      e.preventDefault();
+      if (!draggedItem || draggedItem === item) return;
+
+      // Reorder the DOM
+      const rect = item.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+      if (e.clientY < midY) {
+        taskList.insertBefore(draggedItem, item);
+      } else {
+        taskList.insertBefore(draggedItem, item.nextSibling);
+      }
+
+      // Sync the tasks array to match new DOM order
+      const newOrder = [...taskList.children].map(
+        (el) => tasks.find((t) => t.id === Number(el.dataset.taskId))
+      );
+      tasks = newOrder;
+      updateCurrentTaskDisplay();
+    });
+
+    // --- Rest of your existing code ---
     const left = document.createElement("div");
     left.style.display = "flex";
     left.style.alignItems = "center";
@@ -180,7 +223,7 @@ function startTimer() {
    timerInterval = setInterval(() => {
 
     if (timeLeft <= 0) {
-      //clearInterval(timerInterval);
+      updateStats(); //Updates stats for breaks after they are completed
       completeSession();
       return;
     }
@@ -202,11 +245,13 @@ function startTimer() {
   }
 
   function completeSession(skipped = false) {
-    
+    let mode; 
+
     if (currentMode === "focus") {
       if (!skipped) {
         completedPomodoros += 1;
         totalFocusMinutes += DURATIONS.focus / 60;
+        updateStats(); //Starts with focus session updates after each session is completed
       }
 
       const currentTask = getCurrentTask();
@@ -215,18 +260,23 @@ function startTimer() {
         renderTasks();
       }
 
-      if (!skipped && completedPomodoros % 4 === 0) {
+      if (!skipped && completedPomodoros % 3 === 0) {
         longBreakCount += 1;
-        setMode("longBreak");
+        mode = "longBreak";
       } else {
         shortBreakCount += 1;
-        setMode("shortBreak");
+        mode = "shortBreak";
       }
-    } else {
+      setMode(mode);
+    } 
+    
+    else 
+    {
       setMode("focus");
     }
-    updateStats();
+    //updateStats();
     updateCurrentTaskDisplay();
+    //setMode(mode);
   }
 
   startButton.addEventListener("click", startTimer);
@@ -244,4 +294,5 @@ function startTimer() {
   updateDisplay();
   updateStats();
   updateCurrentTaskDisplay();
+
 })();

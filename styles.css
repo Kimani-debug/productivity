@@ -304,20 +304,20 @@
         @media (max-width: 900px) {
             .app-window {
                 flex-direction: column;
+                overflow-y: auto;  /* allow scrolling when stacked */
             }
             .pane-timer {
                 flex: none;
-                height: 60vh;
+                min-height: 60vh;  /* min instead of fixed height */
+                height: auto;
             }
             .pane-sidebar {
                 flex: none;
                 height: auto;
+                min-height: 40vh;
                 max-width: 100%;
                 border-left: none;
                 border-top: 1px solid var(--text-dark);
-            }
-            .timer-digits {
-                font-size: 25vw;
             }
         }
  
