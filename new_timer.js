@@ -272,6 +272,7 @@ function startTimer() {
 
   function chime() {
     const ctx = audioCtx;
+    ctx.resume();
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
 
