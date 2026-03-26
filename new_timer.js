@@ -1,6 +1,6 @@
 (function () {
   const DURATIONS = {
-    focus: 25 * 60,
+    focus: 1 * 60,
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
   };
@@ -13,6 +13,7 @@
   const pauseButton = document.getElementById("pause_button");
   const skipButton = document.getElementById("skip_button");
   const resetButton = document.getElementById("reset_button");
+  const restartButton = document.getElementById("restart_button");
 
   const taskInput = document.getElementById("task_input");
   const addTaskButton = document.getElementById("add_task_button");
@@ -25,6 +26,7 @@
 
   let timerInterval = null;
   let isRunning = false;
+  let isTransitioning = false;
   let currentMode = "focus";
   let timeLeft = DURATIONS.focus;
   let completedPomodoros = 0;
@@ -32,9 +34,16 @@
   let shortBreakCount = 0;
   let longBreakCount = 0;
   let draggedItem = null;
+  let soundInterval = null;
 
   let tasks = [];
   let nextTaskId = 1;
+
+  const audioCtx = new AudioContext();
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
@@ -218,12 +227,17 @@
 
 function startTimer() {
     if (isRunning) return;
-
+   
     isRunning = true;
-   timerInterval = setInterval(() => {
+    playSessionSound();
 
-    if (timeLeft <= 0) {
-      updateStats(); //Updates stats for breaks after they are completed
+   timerInterval = setInterval(async () => {
+
+    if (timeLeft <= 0 && !isTransitioning) {
+      isTransitioning = true;
+      updateStats();
+      await sleep(500);
+      isTransitioning = false;
       completeSession();
       return;
     }
@@ -239,31 +253,65 @@ function startTimer() {
     setMode(currentMode);
   }
 
+  function restartTimer(){
+    pauseTimer();
+
+    completedPomodoros = 0;
+    totalFocusMinutes = 0;
+    shortBreakCount = 0;
+    longBreakCount = 0;
+
+    updateStats();
+    setMode("focus");
+  }
+
   function skipTimer() {
     pauseTimer();
     completeSession(true);
   }
 
+  function chime() {
+    const ctx = audioCtx;
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+    oscillator.frequency.setValueAtTime(660, ctx.currentTime + 0.2);
+    oscillator.frequency.setValueAtTime(880, ctx.currentTime + 0.4);
+
+    gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.8);
+  }
+
+  function playSessionSound() {
+    chime();
+  }
+
+
   function completeSession(skipped = false) {
-    let mode; 
+    let mode;
 
     if (currentMode === "focus") {
       if (!skipped) {
+        playSessionSound();
         completedPomodoros += 1;
         totalFocusMinutes += DURATIONS.focus / 60;
         updateStats(); //Starts with focus session updates after each session is completed
       }
 
-      const currentTask = getCurrentTask();
-      if (currentTask && !skipped) {
-        currentTask.completed = true;
-        renderTasks();
-      }
-
       if (!skipped && completedPomodoros % 3 === 0) {
+        playSessionSound();
         longBreakCount += 1;
         mode = "longBreak";
       } else {
+        playSessionSound();
         shortBreakCount += 1;
         mode = "shortBreak";
       }
@@ -274,15 +322,14 @@ function startTimer() {
     {
       setMode("focus");
     }
-    //updateStats();
     updateCurrentTaskDisplay();
-    //setMode(mode);
   }
 
   startButton.addEventListener("click", startTimer);
   pauseButton.addEventListener("click", pauseTimer);
   resetButton.addEventListener("click", resetTimer);
   skipButton.addEventListener("click", skipTimer);
+  restartButton.addEventListener("click", restartTimer);
 
   addTaskButton.addEventListener("click", addTask);
   taskInput.addEventListener("keydown", (event) => {
