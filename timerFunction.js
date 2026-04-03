@@ -9,6 +9,8 @@
   const currentTaskName = document.getElementById("current_task_name");
   const sessionType = document.getElementById("session_type");
 
+  const timerSelect = document.getElementById("myDropdown");
+  const timerButton = document.getElementById("timer_button");
   const startButton = document.getElementById("start_button");
   const pauseButton = document.getElementById("pause_button");
   const skipButton = document.getElementById("skip_button");
@@ -73,9 +75,32 @@
     return tasks.find((task) => !task.completed) || null;
   }
 
-  function updateCurrentTaskDisplay() {
+  function updateCurrentTaskDisplay() 
+  {
     const currentTask = getCurrentTask();
     currentTaskName.textContent = currentTask ? currentTask.text : "No task selected";
+  }
+
+  /* When the user clicks on the button,
+  toggle between hiding and showing the dropdown content */
+  function showTimerSelect() 
+  {
+    timerSelect.classList.toggle("show");
+  }
+
+  // Close the dropdown menu if the user clicks outside of it
+  window.onclick = function(event)
+  {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
   }
 
   function createTaskElement(task) {
@@ -338,6 +363,7 @@ function startTimer() {
       addTask();
     }
   });
+  timerButton.addEventListener("click", showTimerSelect);
 
   updateDisplay();
   updateStats();
