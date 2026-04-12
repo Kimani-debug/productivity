@@ -53,7 +53,12 @@
   function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    const workRemaining = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    let workRemaining = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    if(mins >= 60)
+    {
+      const hrs = Math.floor(mins / 60);
+      workRemaining = `${String(hrs).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    }
     return workRemaining;
   }
 
@@ -375,9 +380,26 @@
   });
   timerButton.addEventListener("click", showTimerSelect);
 
+  traditionalCountdwn.addEventListener("click", () => {
+    DURATIONS.focus = 25 * 60;
+    DURATIONS.shortBreak = 5 * 60;
+    DURATIONS.longBreak = 15 * 60;
+    pauseTimer();
+    setMode("focus");
+  });
+
   deepWork.addEventListener("click", () => {
     DURATIONS.focus = 50 * 60;
     DURATIONS.shortBreak = 10 * 60;
+    DURATIONS.longBreak = 20 * 60;
+    pauseTimer();
+    setMode("focus");
+  });
+
+  ultradianRhythm.addEventListener("click", () => {
+    DURATIONS.focus = 90 * 60;
+    DURATIONS.shortBreak = 20 * 60;
+    DURATIONS.longBreak = 30 * 60;
     pauseTimer();
     setMode("focus");
   });
