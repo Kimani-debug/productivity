@@ -10,20 +10,23 @@
         
         
         <main class="pane-timer" vid="8">
+
+            <!--header controls-->
             <header class="header-nav" vid="9">
-                <span vid="10">KELIUS</span>
+                <span vid="10">KELIUS</span> <!--site name-->
                 <div class="header-nav-links" vid="11">
                     <button class="dropbtn" id="timer_button" vid="12">TIMER</button>
                         <div id="myDropdown" class="dropdown-content">
-                            <a href="#">Traditional: 25/5</a>
-                            <a href="#">Deep Work: 50/10</a>
-                            <a href="#">Ultradian Rhythm: 90/20</a>
+                            <a id="traditional_countdwn">Traditional: 25/5</a>
+                            <a id="deep_work">Deep Work: 50/10</a>
+                            <a id="ultra_rhythm">Ultradian Rhythm: 90/20</a>
                         </div>
                     <button class="dropbtn" vid="13">SETTINGS</button>
-<!--                     <span vid="14">LOGOUT</span>
- -->                </div>
+                    <a>" "</a>              
+                </div>
             </header>
 
+            <!--timer display-->
             <div class="timer-display-container" vid="15">
                 <div class="current-task-label" vid="18" id="session_type">Session Type</div>
                 <div class="timer-digits" id="timer_display">25:00</div>
@@ -43,8 +46,9 @@
             </div>
         </main>
 
-        
+        <!--Task list/Session Stats area-->
         <aside class="pane-sidebar" vid="25">
+            <!--Task list area-->
             <section class="section-tasks" vid="26">
                 <header class="section-header" vid="27">
                     <span vid="28">TASK QUEUE</span>
@@ -58,7 +62,7 @@
                 <ul class="task-list" id="task_list" vid="32"></ul>
             </section>
 
-            
+            <!--Session stats block-->
             <section class="section-stats" vid="45">
                 <header class="section-header" vid="46">
                     <span vid="47">SESSION STATS</span>

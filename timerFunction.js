@@ -21,6 +21,10 @@
   const addTaskButton = document.getElementById("add_task_button");
   const taskList = document.getElementById("task_list");
 
+  const traditionalCountdwn = document.getElementById("traditional_countdwn");
+  const deepWork = document.getElementById("deep_work");
+  const ultradianRhythm = document.getElementById("ultra_rhythm");
+
   const pomodoroCountEl = document.getElementById("pomodoro_count");
   const focusMinutesEl = document.getElementById("focus_minutes");
   const shortBreaksEl = document.getElementById("short_breaks");
@@ -36,7 +40,6 @@
   let shortBreakCount = 0;
   let longBreakCount = 0;
   let draggedItem = null;
-  let soundInterval = null;
 
   let tasks = [];
   let nextTaskId = 1;
@@ -83,6 +86,7 @@
 
   /* When the user clicks on the button,
   toggle between hiding and showing the dropdown content */
+
   function showTimerSelect() 
   {
     timerSelect.classList.toggle("show");
@@ -242,15 +246,7 @@
     updateDisplay();
   }
 
-  function pauseTimer() {
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
-    isRunning = false;
-  }
-
-function startTimer() {
+  function startTimer() {
     if (isRunning) return;
    
     isRunning = true;
@@ -273,55 +269,8 @@ function startTimer() {
     }, 1000);
   }
 
-  function resetTimer() {
-    pauseTimer();
-    setMode(currentMode);
-  }
-
-  function restartTimer(){
-    pauseTimer();
-
-    completedPomodoros = 0;
-    totalFocusMinutes = 0;
-    shortBreakCount = 0;
-    longBreakCount = 0;
-
-    updateStats();
-    setMode("focus");
-  }
-
-  function skipTimer() {
-    pauseTimer();
-    completeSession(true);
-  }
-
-  function chime() {
-    const ctx = audioCtx;
-    ctx.resume();
-    const oscillator = ctx.createOscillator();
-    const gainNode = ctx.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(ctx.destination);
-
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(880, ctx.currentTime);
-    oscillator.frequency.setValueAtTime(660, ctx.currentTime + 0.2);
-    oscillator.frequency.setValueAtTime(880, ctx.currentTime + 0.4);
-
-    gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
-
-    oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + 0.8);
-  }
-
-  function playSessionSound() {
-    chime();
-  }
-
-
-  function completeSession(skipped = false) {
+  function completeSession(skipped = false) 
+  {
     let mode;
 
     if (currentMode === "focus") {
@@ -350,6 +299,67 @@ function startTimer() {
     }
     updateCurrentTaskDisplay();
   }
+  
+  function pauseTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    isRunning = false;
+  }
+
+  function resetTimer() 
+  {
+    pauseTimer();
+    setMode(currentMode);
+  }
+
+  function restartTimer()
+  {
+    pauseTimer();
+
+    completedPomodoros = 0;
+    totalFocusMinutes = 0;
+    shortBreakCount = 0;
+    longBreakCount = 0;
+
+    updateStats();
+    setMode("focus");
+  }
+
+  function skipTimer() 
+  {
+    pauseTimer();
+    completeSession(true);
+  }
+
+
+  function chime() 
+  {
+    const ctx = audioCtx;
+    ctx.resume();
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+    oscillator.frequency.setValueAtTime(660, ctx.currentTime + 0.2);
+    oscillator.frequency.setValueAtTime(880, ctx.currentTime + 0.4);
+
+    gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.8);
+  }
+
+  function playSessionSound() 
+  {
+    chime();
+  }
 
   startButton.addEventListener("click", startTimer);
   pauseButton.addEventListener("click", pauseTimer);
@@ -364,6 +374,13 @@ function startTimer() {
     }
   });
   timerButton.addEventListener("click", showTimerSelect);
+
+  deepWork.addEventListener("click", () => {
+    DURATIONS.focus = 50 * 60;
+    DURATIONS.shortBreak = 10 * 60;
+    pauseTimer();
+    setMode("focus");
+  });
 
   updateDisplay();
   updateStats();
